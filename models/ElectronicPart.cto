@@ -1,0 +1,187 @@
+/**  The business network defines a contract between the original electronic parts manufacturer (the Seller) (OCM) and the Integrator(Buyer) of electronic parts defining contracts for the purchase of electronic parts based on the risk of being counterfeit.
+
+The contract stipulates that on receipt of the part the buyer will reject the part if it fails to meet its Counterfeit Prevention and Control Plan.
+Elements that must be satisfied:
+
+    Quantity Ordered Matches Quantity Received
+
+    Records of evidentiary tests and inspections performed by OCM (or complete supply chain traceability - including name and location of all supply chain intermediaries from manufacturer to direct source of the parts/materials.) and stated conformance to specified acceptance criteria that assures authenticity.
+
+    Seller is the OCM (there are other options possible, but more complex)
+
+    Seller-signed Certificate of Conformance provided
+*/
+
+namespace org.acme.electronicPartsNetwork
+
+/**
+ * The type of electronic part being shipped
+ */
+enum PartType {
+  o COMPONENT
+  o ASSEMBLY
+}
+
+/**
+ * The status of a shipment
+ */
+enum ShipmentStatus {
+  o CREATED
+  o IN_TRANSIT
+  o ARRIVED
+  o ACCEPTED
+  o REJECTED
+  o PLACED_IN_INVENTORY
+}
+
+/**
+ * A transaction to add participants for testing
+ */
+transaction addParticipant identified by transactionId {
+  o String transactionId
+}
+
+//a transaction to remove everything added during setup just added for testing
+transaction undoSetup identified by transactionId {
+  o String transactionId
+}
+
+/**
+ * JUST FOR INITIALIZING A DEMO
+ */
+transaction setupDemo identified by transactionId {
+  o String transactionId
+}
+
+/**
+ * An abstract transaction that is related to a Shipment
+ */
+abstract transaction ShipmentTransaction identified by transactionId {
+    o String transactionId
+    --> Shipment shipment
+}
+
+/**
+ * A notification that a shipment has been shipped by the
+ * seller.
+ */
+transaction shipmentShipped extends ShipmentTransaction {
+}
+
+/**
+ * A notification that a shipment has been received by the
+ * buyer.  Evaluates whether counterfeiting controls have been satisfied
+ * and authorizes payment
+ */
+transaction shipmentReceived extends ShipmentTransaction {
+}
+
+/**
+ * A notification that a shipment has been placed in inventory
+ */
+transaction shipmentStored extends ShipmentTransaction {
+}
+
+/**
+ * An electronic part being tracked as an asset on the ledger
+ */
+asset ElectronicPart identified by serNumId {
+  o String serNumId
+  o String partNum
+  o PartType partType
+  o String productionBatchNumber
+  o String manufactureDate
+  o QATest[] qaTests optional
+  o String obsolescenceDate optional
+  --> OriginalComponentManufacturer ocm
+  o String ownerEmail
+}
+
+/**
+ * An electronic parts shipment being tracked as an asset on the ledger
+ */
+asset Shipment identified by shipmentId {
+  o String shipmentId
+  o ShipmentStatus status
+  o Long unitCount
+  o Address shippingAddress optional
+  o String certificateOfConformance
+  --> PurchaseOrder purchaseOrder
+  --> ElectronicPart[] shippedParts
+}
+
+/**
+ * Defines a contract between a Buyer and an Seller paying a set unit price.
+ */
+asset PurchaseOrder identified by purchaseOrderId {
+  o String purchaseOrderId
+  --> OriginalComponentManufacturer seller
+  --> Buyer buyer
+  o String orderedPartNum
+  o Double unitPrice
+  o Long unitCount
+  o String complianceChecksOutcome
+  o String complianceNotes optional
+}
+
+/**
+ * Defines the stored electronic asset in warehouse inventory.
+ */
+asset ElectronicPartInventory identified by inventoryID {
+  o String inventoryID
+  o String partNumber optional
+  o String locationName optional
+  o ElectronicPart[] storedParts optional
+  o String stockedDate optional
+}
+
+
+/**
+ * A concept for a simple street address
+ */
+concept Address {
+  o String city optional
+  o String country optional
+  o String street optional
+  o String zip optional
+}
+
+/**
+  * A concept for a QA Test Record
+  */
+concept QATest {
+  o String testID optional
+  o String testType optional
+  o String testPerformedDate optional
+  o String testOutcome optional
+  o String Inspector optional
+  o String originalRecordURL optional
+}
+
+
+/**
+ * An abstract participant type in this business network
+ */
+abstract participant Business identified by email {
+  o String email
+  o Address address optional
+  o Double accountBalance
+}
+
+/**
+ * An OriginalComponentManufacturer  is a type of participant in the network
+ */
+participant OriginalComponentManufacturer extends Business {
+}
+
+/**
+ * An Buyer is a type of participant in the network
+ */
+participant Buyer extends Business {
+}
+
+/**
+ * A Distributor is a type of participant in the network
+ */
+participant Distributor extends Business {
+}
