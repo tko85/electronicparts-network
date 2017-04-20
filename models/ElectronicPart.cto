@@ -107,7 +107,7 @@ asset Shipment identified by shipmentId {
   o Address shippingAddress optional
   o String certificateOfConformance
   --> PurchaseOrder purchaseOrder
-  --> ElectronicPart[] shippedParts
+  o ElectronicPart[] shippedParts
 }
 
 /**
