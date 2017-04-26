@@ -1,9 +1,10 @@
-/**  The business network defines a contract between the original electronic parts manufacturer (the Seller) (OCM) and the Integrator(Buyer) of electronic parts defining contracts for the purchase of electronic parts based on the risk of being counterfeit.
+/**  The electronic parts business network defines a contract between the original electronic parts manufacturer (the Seller) (OCM) and the Integrator(Buyer) of electronic parts defining contracts for the purchase of electronic parts based on the risk of being counterfeit.
 
-The contract stipulates that on receipt of the part the buyer will reject the part if it fails to meet its Counterfeit Prevention and Control Plan.
+The contract stipulates that on receipt of the part the buyer will reject the part if it fails to meet its Counterfeit Prevention and Control Plan.  If policy satisfied, Purchase Order is credited/debited to Seller/Buyer.
+
 Elements that must be satisfied:
 
-    Quantity Ordered Matches Quantity Received
+    Part number and Quantity Ordered Matches Received
 
     Records of evidentiary tests and inspections performed by OCM (or complete supply chain traceability - including name and location of all supply chain intermediaries from manufacturer to direct source of the parts/materials.) and stated conformance to specified acceptance criteria that assures authenticity.
 
@@ -34,14 +35,10 @@ enum ShipmentStatus {
   o PLACED_IN_INVENTORY
 }
 
-/**
- * A transaction to add participants for testing
- */
-transaction addParticipant identified by transactionId {
-  o String transactionId
-}
 
-//a transaction to remove everything added during setup just added for testing
+/**
+ * JUST FOR RESTORING FROM A DEMO
+ */
 transaction undoSetup identified by transactionId {
   o String transactionId
 }
@@ -107,7 +104,7 @@ asset Shipment identified by shipmentId {
   o Address shippingAddress optional
   o String certificateOfConformance
   --> PurchaseOrder purchaseOrder
-  o ElectronicPart[] shippedParts
+  --> ElectronicPart[] shippedParts
 }
 
 /**
@@ -122,6 +119,7 @@ asset PurchaseOrder identified by purchaseOrderId {
   o Long unitCount
   o String complianceChecksOutcome
   o String complianceNotes optional
+  o String status optional
 }
 
 /**
@@ -131,7 +129,7 @@ asset ElectronicPartInventory identified by inventoryID {
   o String inventoryID
   o String partNumber optional
   o String locationName optional
-  o ElectronicPart[] storedParts optional
+  --> ElectronicPart[] storedParts optional
   o String stockedDate optional
 }
 
