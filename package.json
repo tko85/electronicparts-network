@@ -1,11 +1,11 @@
 {
   "name": "electronicpart-network",
   "version": "1.0.1",
-  "description": "",
+  "description": "Example business network for electronic parts to demonstrate how part provenance can help detect and avoid counterfeit parts",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Tim Olson, IBM",
   "license": "ISC"
 }
